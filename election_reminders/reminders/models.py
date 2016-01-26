@@ -18,7 +18,7 @@ class Schedule(models.Model):
     )
     media_type = models.CharField(max_length=2, choices=MEDIA_TYPE_CHOICES)
 
-    def create_reminders(self):
+    def create_messages(self):
         """ Create reminders corresponding to this schedule.
 
         idempotent: if the messages are already created, this method won't create duplicates

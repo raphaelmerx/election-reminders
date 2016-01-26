@@ -21,3 +21,4 @@ class VoterFactory(DjangoModelFactory):
     street_address = '123 Montgomery St'
     city = 'San Francisco'
     state = 'CA'
+    phone_number = '+14444444444'

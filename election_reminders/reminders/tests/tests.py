@@ -1,3 +1,4 @@
+from unittest import mock
 from datetime import timedelta, datetime
 
 import pytz
@@ -51,3 +52,22 @@ class CreateMessage(TestCase):
         # message is sent now, don't resend an email
         send_message(message.id)
         self.assertEqual(len(mail.outbox), 1)
+
+class SendMessages(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        pass
+
+    @override_settings(CELERY_ALWAYS_EAGER=True)
+    def test_truc(self):
+        with mock.patch('reminders.tasks.TwilioRestClient') as mock_twilio:
+            # set the TwilioRestClient instance so that we use the same object here and in the reminders.tasks module
+            twilio_instance = mock.Mock()
+            mock_twilio.return_value = twilio_instance
+            send_sms = twilio_instance.messages.create
+            self.assertEqual(send_sms.call_count, 0)
+            message = MessageFactory(media_type=Message.SMS, voter__phone_number='+2222222222')
+            send_message.delay(message.id)
+            self.assertEqual(send_sms.call_count, 1)
+            self.assertEqual(send_sms.call_args[1]['body'],
+                             'The Virginia Primary election will be held on 03/01/16 at 01PM.')
