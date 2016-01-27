@@ -4,7 +4,8 @@ This project uses Python 3.5.1 and Django 1.9.1.
 
 Local setup:
 * clone the repo
-* `pip install -r requirements.txt`
+* `pip install -r requirements/base.txt`
+* `pip install -r requirements/test.txt`
 * `cd election_reminders`
 * `./manage.py migrate`
 * `PYTHONPATH=.: scripts/create_staff_user.py`
