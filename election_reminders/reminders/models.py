@@ -9,7 +9,9 @@ from elections.models import Election
 
 class Schedule(models.Model):
     """ Used to set how much time before elections a message should be sent. """
-    time_before_election = models.DurationField(help_text='Ex: 2 days to send a reminder 2 days before all elections.')
+    time_before_election = models.DurationField(
+        help_text='Ex: 2 days to send a reminder 2 days before all elections.'
+                  'Format is "days hours:min:secs". Ex: "1 02:00:00" for one day, 2 hours before.')
     EMAIL = 'E'
     SMS  = 'S'
     MEDIA_TYPE_CHOICES = (
