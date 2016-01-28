@@ -9,5 +9,5 @@ Local setup:
 * `cd election_reminders`
 * `./manage.py migrate`
 * `PYTHONPATH=.: scripts/create_staff_user.py`
-* `./manage.py runserver`
+* `./manage.py fullserver`
 * access the Django admin at [http://localhost:8000/admin](http://localhost:8000/admin)

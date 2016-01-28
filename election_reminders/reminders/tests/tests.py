@@ -9,7 +9,7 @@ from elections.tests.factories import ElectionFactory
 from voters.models import Voter
 from voters.tests.factories import VoterFactory
 from reminders.tests.factories import ScheduleFactory
-from reminders.models import Message
+from reminders.models import Message, Schedule
 from reminders.tasks import create_messages, send_message
 from .factories import MessageFactory
 
@@ -59,14 +59,14 @@ class SendMessages(TestCase):
         pass
 
     @override_settings(CELERY_ALWAYS_EAGER=True)
-    def test_truc(self):
+    def test_created_message_sent_with_twilio(self):
         with mock.patch('reminders.tasks.TwilioRestClient') as mock_twilio:
             # set the TwilioRestClient instance so that we use the same object here and in the reminders.tasks module
             twilio_instance = mock.Mock()
             mock_twilio.return_value = twilio_instance
             send_sms = twilio_instance.messages.create
             self.assertEqual(send_sms.call_count, 0)
-            message = MessageFactory(media_type=Message.SMS, voter__phone_number='+2222222222')
+            message = MessageFactory(schedule__media_type=Schedule.SMS, voter__phone_number='+2222222222')
             send_message.delay(message.id)
             self.assertEqual(send_sms.call_count, 1)
             self.assertEqual(send_sms.call_args[1]['body'],

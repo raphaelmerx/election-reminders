@@ -40,14 +40,11 @@ class Schedule(models.Model):
 
 class Message(models.Model):
     """ An email or a SMS that was sent based on an election and a Schedule. """
-    EMAIL = 'E'
-    SMS  = 'S'
-    MEDIA_TYPE_CHOICES = (
-        (EMAIL, 'email'),
-        (SMS, 'SMS'),
-    )
-    media_type = models.CharField(max_length=2, choices=MEDIA_TYPE_CHOICES)
     sent = models.BooleanField(default=False)
     voter = models.ForeignKey(Voter, on_delete=models.CASCADE)
     schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE)
     election = models.ForeignKey(Election, on_delete=models.CASCADE)
+
+    @property
+    def media_type(self):
+        return self.schedule.media_type

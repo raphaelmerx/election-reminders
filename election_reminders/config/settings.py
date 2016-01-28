@@ -127,6 +127,15 @@ BROKER_URL = 'redis://localhost:6379/0'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
+from datetime import timedelta
+
+CELERYBEAT_SCHEDULE = {
+    'create-messages-every-minute': {
+        'task': 'reminders.tasks.create_messages',
+        'schedule': timedelta(minutes=1),
+        'args': ()
+    },
+}
 
 # Twilio
 TWILIO_ACCOUNT_ID= os.environ['TWILIO_ACCOUNT_ID']

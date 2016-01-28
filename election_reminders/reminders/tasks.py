@@ -25,11 +25,11 @@ def send_message(message_id):
     message = Message.objects.get(id=message_id)
     if message.sent:
         return
-    if message.media_type == Message.EMAIL:
+    if message.media_type == Schedule.EMAIL:
         # TODO: Use mandrill
         dest = message.voter.user.email
         send_mail(subject='Hey there', message='body', from_email='election@reminders.com', recipient_list=[dest], fail_silently=False)
-    elif message.media_type == Message.SMS:
+    elif message.media_type == Schedule.SMS:
         # TODO: put this logic in the models
         twilio_client = TwilioRestClient(settings.TWILIO_ACCOUNT_ID, settings.TWILIO_TOKEN)
         # TODO: format election.date according to the voter's timezone

@@ -20,7 +20,7 @@ class MessageFactory(DjangoModelFactory):
     class Meta:
         model = Message
 
-    media_type = Message.EMAIL
+    media_type = Schedule.EMAIL
     schedule = factory.SubFactory(ScheduleFactory)
     voter = factory.SubFactory(VoterFactory)
     election = factory.SubFactory(ElectionFactory)
