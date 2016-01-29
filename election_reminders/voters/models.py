@@ -11,3 +11,6 @@ class Voter(models.Model):
     state = models.CharField(max_length=2, help_text='2 letter upper case state code. Ex: VA')
     phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$', message='Phone number must be entered in the format: +99999999.')
     phone_number = models.CharField(validators=[phone_regex], blank=True, max_length=16)
+
+    def __str__(self):
+        return self.user.username
