@@ -4,6 +4,7 @@ This project uses Python 3.5.1 and Django 1.9.1.
 
 Local setup:
 * clone the repo
+* install redis: [http://redis.io/topics/quickstart](http://redis.io/topics/quickstart)
 * `pip install -r requirements/base.txt`
 * `pip install -r requirements/test.txt`
 * `cd election_reminders`

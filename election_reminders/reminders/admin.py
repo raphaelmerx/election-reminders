@@ -10,7 +10,7 @@ class ScheduleAdmin(admin.ModelAdmin):
 
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):
-    list_display = ('id', 'voter', 'election', 'media_type')
+    list_display = ('id', 'sent', 'voter', 'election', 'media_type')
     readonly_fields = ('sent', 'voter', 'election', 'schedule')
 
     def media_type(self, message):
