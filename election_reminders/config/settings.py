@@ -5,10 +5,10 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-SECRET_KEY = os.environ['SECRET_KEY']
+SECRET_KEY = os.environ.get('SECRET_KEY', 'blah')
 
-DEBUG = (os.environ['DEBUG'] == 'True')
-IS_DEPLOYMENT = (os.environ['IS_DEPLOYMENT'] == 'True')
+DEBUG = (os.environ.get('DEBUG', 'True') == 'True')
+IS_DEPLOYMENT = (os.environ.get('IS_DEPLOYMENT', 'False') == 'True')
 
 ALLOWED_HOSTS = ['electionreminders.org']
 
@@ -137,5 +137,5 @@ CELERYBEAT_SCHEDULE = {
 }
 
 # Twilio
-TWILIO_ACCOUNT_ID= os.environ['TWILIO_ACCOUNT_ID']
-TWILIO_TOKEN= os.environ['TWILIO_TOKEN']
+TWILIO_ACCOUNT_ID= os.environ.get('TWILIO_ACCOUNT_ID', 'blah')
+TWILIO_TOKEN= os.environ.get('TWILIO_TOKEN', 'blahblah')

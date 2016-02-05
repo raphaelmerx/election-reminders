@@ -1,8 +1,12 @@
+[![Build Status](https://travis-ci.org/raphaelmerx/election-reminders.svg?branch=master)](https://travis-ci.org/raphaelmerx/election-reminders)
+
 # election-reminders
 
-This project uses Python 3.5.1 and Django 1.9.1.
+This project uses Python 3.5.1 and Django 1.9.1. The deployed environment uses Postgres and Redis as database backends,
+     Celery for asynchronous tasks, Gunicorn for the HTTP server, and nginx for load balancing.
 
-Local setup:
+### Local setup:
+
 * clone the repo
 * if you don't have redis running, install it: [http://redis.io/topics/quickstart](http://redis.io/topics/quickstart)
 * `pip install -r requirements/base.txt`
