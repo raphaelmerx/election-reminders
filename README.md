@@ -4,10 +4,11 @@ This project uses Python 3.5.1 and Django 1.9.1.
 
 Local setup:
 * clone the repo
-* install redis: [http://redis.io/topics/quickstart](http://redis.io/topics/quickstart)
+* if you don't have redis running, install it: [http://redis.io/topics/quickstart](http://redis.io/topics/quickstart)
 * `pip install -r requirements/base.txt`
 * `pip install -r requirements/test.txt`
 * `cd election_reminders`
+* `cp scripts/sample_env_vars ~/.election_reminders && source ~/.election_reminders`
 * `./manage.py migrate`
 * `PYTHONPATH=.: scripts/create_staff_user.py`
 * `./manage.py fullserver`
