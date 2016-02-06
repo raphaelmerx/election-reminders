@@ -7,6 +7,9 @@ services:
 install:
     - pip install -r requirements/base.txt
     - pip install -r requirements/test.txt
+    - pip install coveralls
 script:
     - cd election_reminders
-    - python manage.py test
+    - coverage run --source=. manage.py test
+after_success:
+    - coveralls
