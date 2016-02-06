@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'elections',
     'voters',
     'reminders',
+    'staff',
 ]
 
 MIDDLEWARE_CLASSES = [

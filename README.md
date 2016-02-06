@@ -1,4 +1,6 @@
 [![Build Status](https://travis-ci.org/raphaelmerx/election-reminders.svg?branch=master)](https://travis-ci.org/raphaelmerx/election-reminders)
+[![Coverage Status](https://coveralls.io/repos/github/raphaelmerx/election-reminders/badge.svg?branch=master)](https://coveralls.io/github/raphaelmerx/election-reminders?branch=master)
+
 
 # election-reminders
 

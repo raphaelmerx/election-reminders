@@ -10,6 +10,6 @@ install:
     - pip install coveralls
 script:
     - cd election_reminders
-    - coverage run --source=. manage.py test
+    - coverage run --source=. --omit="staff/management/commands/*" manage.py test
 after_success:
     - coveralls
