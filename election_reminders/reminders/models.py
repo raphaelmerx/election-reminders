@@ -1,7 +1,10 @@
 from datetime import datetime
 
+import us
 import pytz
 from django.db import models
+from django.conf import settings
+from twilio.rest import TwilioRestClient
 
 from voters.models import Voter
 from elections.models import Election
@@ -13,7 +16,7 @@ class Schedule(models.Model):
         help_text='Ex: 2 days to send a reminder 2 days before all elections.'
                   'Format is "days hours:min:secs". Ex: "1 02:00:00" for one day, 2 hours before.')
     EMAIL = 'E'
-    SMS  = 'S'
+    SMS = 'S'
     MEDIA_TYPE_CHOICES = (
         (EMAIL, 'email'),
         (SMS, 'SMS'),
@@ -48,3 +51,16 @@ class Message(models.Model):
     @property
     def media_type(self):
         return self.schedule.media_type
+
+    def send_sms(self):
+        assert self.media_type == Schedule.SMS
+
+        twilio_client = TwilioRestClient(settings.TWILIO_ACCOUNT_ID, settings.TWILIO_TOKEN)
+        tz_name = getattr(us.states, self.election.state).time_zones[0]
+        date_in_election_tz = self.election.date.astimezone(tz=pytz.timezone(tz_name))
+        twilio_client.messages.create(
+            to=self.voter.phone_number,
+            from_='+14807718683',
+            body='The {} will be held on {:%m/%d/%y} at {:%I%p}.'.format(
+                self.election.name, date_in_election_tz, date_in_election_tz)
+        )

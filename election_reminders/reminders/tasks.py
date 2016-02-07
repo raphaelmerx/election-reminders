@@ -1,9 +1,7 @@
 from celery import shared_task
-from django.conf import settings
 from django.core.mail import send_mail
 from django.db import transaction
 
-from twilio.rest import TwilioRestClient
 from .models import Schedule, Message
 
 
@@ -28,17 +26,10 @@ def send_message(message_id):
     if message.media_type == Schedule.EMAIL:
         # TODO: Use mandrill
         dest = message.voter.user.email
-        send_mail(subject='Hey there', message='body', from_email='election@reminders.com', recipient_list=[dest], fail_silently=False)
+        send_mail(subject='Hey there', message='body', from_email='election@reminders.com',
+                  recipient_list=[dest], fail_silently=False)
     elif message.media_type == Schedule.SMS:
-        # TODO: put this logic in the models
-        twilio_client = TwilioRestClient(settings.TWILIO_ACCOUNT_ID, settings.TWILIO_TOKEN)
-        # TODO: format election.date according to the voter's timezone
-        twilio_client.messages.create(
-            to=message.voter.phone_number,
-            from_='+14807718683',
-            body='The {} will be held on {:%m/%d/%y} at {:%I%p}.'.format(
-                message.election.name, message.election.date, message.election.date)
-        )
+        message.send_sms()
 
     message.sent = True
     message.save()

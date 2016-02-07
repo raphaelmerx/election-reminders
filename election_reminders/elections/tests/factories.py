@@ -10,6 +10,7 @@ class ElectionFactory(DjangoModelFactory):
     class Meta:
         model = Election
 
-    date = datetime(2016, 3, 1, 9, 00, 00, tzinfo=pytz.timezone('America/New_York'))
+    # 9AM + 5 for UTC
+    date = datetime(2016, 3, 1, 14, 00, 00, tzinfo=pytz.utc)
     name = 'Virginia Primary election'
     state = 'VA'

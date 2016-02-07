@@ -1,5 +1,6 @@
 from unittest import mock
 from datetime import timedelta, datetime
+from contextlib import contextmanager
 
 import pytz
 from django.test import TestCase, override_settings
@@ -12,6 +13,15 @@ from reminders.tests.factories import ScheduleFactory
 from reminders.models import Message, Schedule
 from reminders.tasks import create_messages, send_message
 from .factories import MessageFactory
+
+
+@contextmanager
+def mock_twilio():
+    with mock.patch('reminders.models.TwilioRestClient') as mock_twilio:
+        # set the TwilioRestClient instance so that we use the same object here and in the reminders.models module
+        twilio_instance = mock.Mock()
+        mock_twilio.return_value = twilio_instance
+        yield twilio_instance
 
 
 class CreateMessage(TestCase):
@@ -53,21 +63,26 @@ class CreateMessage(TestCase):
         send_message(message.id)
         self.assertEqual(len(mail.outbox), 1)
 
+
 class SendMessages(TestCase):
     @classmethod
     def setUpTestData(cls):
-        pass
+        cls.message = MessageFactory(schedule__media_type=Schedule.SMS)
 
     @override_settings(CELERY_ALWAYS_EAGER=True)
     def test_created_message_sent_with_twilio(self):
-        with mock.patch('reminders.tasks.TwilioRestClient') as mock_twilio:
-            # set the TwilioRestClient instance so that we use the same object here and in the reminders.tasks module
-            twilio_instance = mock.Mock()
-            mock_twilio.return_value = twilio_instance
-            send_sms = twilio_instance.messages.create
+        with mock_twilio() as twilio_client:
+            send_sms = twilio_client.messages.create
             self.assertEqual(send_sms.call_count, 0)
-            message = MessageFactory(schedule__media_type=Schedule.SMS, voter__phone_number='+2222222222')
-            send_message.delay(message.id)
+            send_message.delay(self.message.id)
+            self.assertEqual(send_sms.call_count, 1)
+
+    def test_show_election_time_in_election_timezone(self):
+        with mock_twilio() as twilio_client:
+            # hour in UTC
+            self.assertEqual(self.message.election.date.hour, 14)
+            send_sms = twilio_client.messages.create
+            self.message.send_sms()
             self.assertEqual(send_sms.call_count, 1)
             self.assertEqual(send_sms.call_args[1]['body'],
-                             'The Virginia Primary election will be held on 03/01/16 at 01PM.')
+                             'The Virginia Primary election will be held on 03/01/16 at 09AM.')

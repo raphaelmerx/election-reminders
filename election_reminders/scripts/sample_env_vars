@@ -1,0 +1,6 @@
+export SECRET_KEY='asdf'
+export DEBUG=True
+export TWILIO_ACCOUNT_ID='blah'
+export TWILIO_TOKEN='blahblah'
+export MAILCHIMP_KEY='heyman'
+export IS_DEPLOYMENT=False
