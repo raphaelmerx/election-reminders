@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -23,6 +24,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'djrill',
+
     'elections',
     'voters',
     'reminders',
@@ -45,8 +48,8 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
+        'DIRS': ['templates'],
+        'APP_DIRS': False,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -127,7 +130,6 @@ BROKER_URL = 'redis://localhost:6379/0'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
-from datetime import timedelta
 
 CELERYBEAT_SCHEDULE = {
     'create-messages-every-minute': {
@@ -140,3 +142,8 @@ CELERYBEAT_SCHEDULE = {
 # Twilio
 TWILIO_ACCOUNT_ID= os.environ.get('TWILIO_ACCOUNT_ID', 'blah')
 TWILIO_TOKEN= os.environ.get('TWILIO_TOKEN', 'blahblah')
+
+# Mandrill
+MANDRILL_API_KEY = os.environ.get('MANDRILL_KEY', 'john the api key')
+EMAIL_BACKEND = "djrill.mail.backends.djrill.DjrillBackend"
+DEFAULT_FROM_EMAIL = "test@projectverify.org"

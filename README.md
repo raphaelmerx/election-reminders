@@ -4,7 +4,7 @@
 
 # election-reminders
 
-This project uses Python 3.5.1 and Django 1.9.1. The deployed environment uses Postgres and Redis as database backends,
+This project uses Python 3.5 and Django 1.9. The deployed environment uses Postgres and Redis as database backends,
      Celery for asynchronous tasks, Gunicorn for the HTTP server, and nginx for load balancing.
 
 ### Local setup:

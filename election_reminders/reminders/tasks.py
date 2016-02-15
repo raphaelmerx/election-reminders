@@ -1,5 +1,4 @@
 from celery import shared_task
-from django.core.mail import send_mail
 from django.db import transaction
 
 from .models import Schedule, Message
@@ -24,10 +23,7 @@ def send_message(message_id):
     if message.sent:
         return
     if message.media_type == Schedule.EMAIL:
-        # TODO: Use mandrill
-        dest = message.voter.user.email
-        send_mail(subject='Hey there', message='body', from_email='election@reminders.com',
-                  recipient_list=[dest], fail_silently=False)
+        message.send_email()
     elif message.media_type == Schedule.SMS:
         message.send_sms()
 

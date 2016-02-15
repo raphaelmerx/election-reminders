@@ -1,0 +1,7 @@
+Hello {{first_name}},
+
+The {{election_name}} will be held on {{date}}.
+
+
+Happy voting!
+– The Long Distance Voter Team

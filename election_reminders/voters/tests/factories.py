@@ -10,6 +10,7 @@ class UserFactory(factory.django.DjangoModelFactory):
         django_get_or_create = ('username',)
 
     username = factory.Sequence(lambda n: 'john_{}'.format(n))
+    first_name = 'John'
     email = factory.LazyAttribute(lambda u: '{0.username}@gmail.com'.format(u))
 
 

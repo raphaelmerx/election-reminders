@@ -4,6 +4,8 @@ import us
 import pytz
 from django.db import models
 from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
 from twilio.rest import TwilioRestClient
 
 from voters.models import Voter
@@ -64,3 +66,19 @@ class Message(models.Model):
             body='The {} will be held on {:%m/%d/%y} at {:%I%p}.'.format(
                 self.election.name, date_in_election_tz, date_in_election_tz)
         )
+
+    def send_email(self):
+        assert self.media_type == Schedule.EMAIL
+
+        tz_name = getattr(us.states, self.election.state).time_zones[0]
+        election_tz = pytz.timezone(tz_name)
+        date_in_election_tz = self.election.date.astimezone(tz=election_tz).strftime('%m/%d/%y at %I%p')
+        template_data = {'first_name': self.voter.user.first_name,
+                         'election_name': self.election.name,
+                         'date': date_in_election_tz}
+        text_body = render_to_string('email.txt', template_data)
+        html_body = render_to_string('email.html', template_data)
+        email = EmailMultiAlternatives(subject='An election is coming up!', from_email=settings.DEFAULT_FROM_EMAIL,
+                                     to=[self.voter.user.email], body=text_body)
+        email.attach_alternative(html_body, 'text/html')
+        email.send()

@@ -5,6 +5,7 @@ from contextlib import contextmanager
 import pytz
 from django.test import TestCase, override_settings
 from django.core import mail
+from djrill.mail.backends.djrill import DjrillBackend
 
 from elections.tests.factories import ElectionFactory
 from voters.models import Voter
@@ -51,18 +52,6 @@ class CreateMessage(TestCase):
         create_messages()
         self.assertEqual(Message.objects.count(), 1)
 
-    @override_settings(CELERY_ALWAYS_EAGER=True)
-    def test_no_email_sent_if_message_sent(self):
-        message = MessageFactory(sent=False)
-        send_message(message.id)
-        self.assertEqual(len(mail.outbox), 1)
-
-        message.refresh_from_db()
-        self.assertTrue(message.sent)
-        # message is sent now, don't resend an email
-        send_message(message.id)
-        self.assertEqual(len(mail.outbox), 1)
-
 
 class SendMessages(TestCase):
     @classmethod
@@ -86,3 +75,23 @@ class SendMessages(TestCase):
             self.assertEqual(send_sms.call_count, 1)
             self.assertEqual(send_sms.call_args[1]['body'],
                              'The Virginia Primary election will be held on 03/01/16 at 09AM.')
+
+    @override_settings(CELERY_ALWAYS_EAGER=True)
+    def test_no_email_sent_if_message_already_sent(self):
+        message = MessageFactory(sent=False)
+        send_message(message.id)
+        self.assertEqual(len(mail.outbox), 1)
+
+        message.refresh_from_db()
+        self.assertTrue(message.sent)
+        send_message(message.id)
+        self.assertEqual(len(mail.outbox), 1)
+
+    @override_settings(EMAIL_BACKEND = 'djrill.mail.backends.djrill.DjrillBackend')
+    def test_send_email(self):
+        message = MessageFactory(voter__user__email='raphaelm@captricity.com')
+        with mock.patch.object(DjrillBackend, 'send_messages') as mock_send_messages:
+            message.send_email()
+            self.assertTrue(mock_send_messages.called)
+            email = mock_send_messages.call_args[0][0][0]
+            self.assertIn('The Virginia Primary election will be held on 03/01/16 at 09AM.', email.body)
