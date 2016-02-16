@@ -4,6 +4,7 @@ from django.conf import settings
 
 from voters.models import Voter
 
+
 class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = settings.AUTH_USER_MODEL

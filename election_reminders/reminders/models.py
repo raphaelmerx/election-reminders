@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime
 
 import us
@@ -49,6 +50,7 @@ class Message(models.Model):
     voter = models.ForeignKey(Voter, on_delete=models.CASCADE)
     schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE)
     election = models.ForeignKey(Election, on_delete=models.CASCADE)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
 
     @property
     def media_type(self):
@@ -78,7 +80,9 @@ class Message(models.Model):
                          'date': date_in_election_tz}
         text_body = render_to_string('email.txt', template_data)
         html_body = render_to_string('email.html', template_data)
+        unsubscribe_url = 'blah'  # TODO
+        headers = {'List-Unsubscribe': '<{}>'.format(unsubscribe_url)}
         email = EmailMultiAlternatives(subject='An election is coming up!', from_email=settings.DEFAULT_FROM_EMAIL,
-                                     to=[self.voter.user.email], body=text_body)
+                                     to=[self.voter.user.email], body=text_body, headers=headers)
         email.attach_alternative(html_body, 'text/html')
         email.send()

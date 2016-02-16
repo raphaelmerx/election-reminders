@@ -1,0 +1,11 @@
+<form action="" method="post">
+    {% csrf_token %}
+    <p>
+        Would you like to unsubscribe from electionreminders.org emails?
+    </p>
+    {{ form.unsubscribed }} 
+    <label for="id_unsubscribed"> Yes, I want to unsubscribe. </label>
+    <p>
+        <input type="submit" value="OK">
+    </p>
+</form>

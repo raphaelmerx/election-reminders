@@ -8,4 +8,3 @@ class Staff(TestCase):
         response = c.get('')
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, '/admin/')
-

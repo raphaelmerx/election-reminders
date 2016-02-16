@@ -87,7 +87,7 @@ class SendMessages(TestCase):
         send_message(message.id)
         self.assertEqual(len(mail.outbox), 1)
 
-    @override_settings(EMAIL_BACKEND = 'djrill.mail.backends.djrill.DjrillBackend')
+    @override_settings(EMAIL_BACKEND='djrill.mail.backends.djrill.DjrillBackend')
     def test_send_email(self):
         message = MessageFactory(voter__user__email='raphaelm@captricity.com')
         with mock.patch.object(DjrillBackend, 'send_messages') as mock_send_messages:
