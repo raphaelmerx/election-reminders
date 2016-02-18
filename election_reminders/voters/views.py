@@ -7,7 +7,7 @@ from .forms import UnsubscribeForm
 
 def unsubscribe(request):
     try:
-        voter = get_object_or_404(Voter, message__uuid=request.GET.get('uuid'))
+        voter = get_object_or_404(Voter, uuid=request.GET.get('uuid'))
     except ValueError:
         return HttpResponse('Invalid UUID', status=400)
     if request.method == 'GET':

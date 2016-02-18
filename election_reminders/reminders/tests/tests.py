@@ -57,6 +57,7 @@ class SendMessages(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.message = MessageFactory(schedule__media_type=Schedule.SMS)
+        cls.email_message = MessageFactory(schedule__media_type=Schedule.EMAIL)
 
     @override_settings(CELERY_ALWAYS_EAGER=True)
     def test_created_message_sent_with_twilio(self):
@@ -78,7 +79,7 @@ class SendMessages(TestCase):
 
     @override_settings(CELERY_ALWAYS_EAGER=True)
     def test_no_email_sent_if_message_already_sent(self):
-        message = MessageFactory(sent=False)
+        message = self.email_message
         send_message(message.id)
         self.assertEqual(len(mail.outbox), 1)
 
@@ -89,9 +90,27 @@ class SendMessages(TestCase):
 
     @override_settings(EMAIL_BACKEND='djrill.mail.backends.djrill.DjrillBackend')
     def test_send_email(self):
-        message = MessageFactory(voter__user__email='raphaelm@captricity.com')
-        with mock.patch.object(DjrillBackend, 'send_messages') as mock_send_messages:
+        message = self.email_message
+        with self.mock_mandrill(message) as email:
+            self.assertIn('The Virginia Primary election will be held on 03/01/16 at 09AM.', email.body)
+
+    @override_settings(EMAIL_BACKEND='djrill.mail.backends.djrill.DjrillBackend')
+    def test_unsubscribe_link_in_email(self):
+        message = self.email_message
+        with self.mock_mandrill(message) as email:
+            # in header
+            unsubscribe_url = email.extra_headers['List-Unsubscribe'][1:-1]
+            self.assertEqual(unsubscribe_url, message.unsubscribe_url)
+            self.assertIn(str(message.voter.uuid), unsubscribe_url)
+
+            # in email body
+            self.assertIn(message.unsubscribe_url, email.body)
+
+    @contextmanager
+    def mock_mandrill(self, message):
+        with self.settings(EMAIL_BACKEND='djrill.mail.backends.djrill.DjrillBackend'), \
+                mock.patch.object(DjrillBackend, 'send_messages') as mock_send_messages:
             message.send_email()
             self.assertTrue(mock_send_messages.called)
             email = mock_send_messages.call_args[0][0][0]
-            self.assertIn('The Virginia Primary election will be held on 03/01/16 at 09AM.', email.body)
+            yield email

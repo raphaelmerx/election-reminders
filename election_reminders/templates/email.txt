@@ -5,3 +5,4 @@ The {{election_name}} will be held on {{date}}.
 
 Happy voting!
 – The Long Distance Voter Team
+You can unsubscribe from our emails using this link: {{unsubscribe_url}}

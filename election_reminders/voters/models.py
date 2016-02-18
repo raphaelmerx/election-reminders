@@ -1,3 +1,5 @@
+import uuid
+
 from django.conf import settings
 from django.db import models
 from django.core.validators import RegexValidator
@@ -13,6 +15,7 @@ class Voter(models.Model):
     city = models.CharField(max_length=64, help_text='Ex: New York City')
     state = models.CharField(max_length=2, help_text='2 letter upper case state code. Ex: VA')
     phone_number = models.CharField(validators=[phone_regex], blank=True, max_length=16)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
 
     def __str__(self):
         return self.user.username

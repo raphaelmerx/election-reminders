@@ -1,4 +1,4 @@
-import uuid
+import urllib
 from datetime import datetime
 
 import us
@@ -6,6 +6,7 @@ import pytz
 from django.db import models
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
+from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 from twilio.rest import TwilioRestClient
 
@@ -50,7 +51,6 @@ class Message(models.Model):
     voter = models.ForeignKey(Voter, on_delete=models.CASCADE)
     schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE)
     election = models.ForeignKey(Election, on_delete=models.CASCADE)
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
 
     @property
     def media_type(self):
@@ -69,20 +69,28 @@ class Message(models.Model):
                 self.election.name, date_in_election_tz, date_in_election_tz)
         )
 
+    @property
+    def unsubscribe_url(self):
+        # TODO: use the Django site object
+        return ('https://electionreminders.org' + reverse('unsubscribe') +
+                '?' + urllib.parse.urlencode({'uuid': self.voter.uuid}))
+
     def send_email(self):
         assert self.media_type == Schedule.EMAIL
 
         tz_name = getattr(us.states, self.election.state).time_zones[0]
         election_tz = pytz.timezone(tz_name)
         date_in_election_tz = self.election.date.astimezone(tz=election_tz).strftime('%m/%d/%y at %I%p')
+        unsubscribe_url = self.unsubscribe_url
         template_data = {'first_name': self.voter.user.first_name,
                          'election_name': self.election.name,
-                         'date': date_in_election_tz}
+                         'date': date_in_election_tz,
+                         'unsubscribe_url': unsubscribe_url}
         text_body = render_to_string('email.txt', template_data)
         html_body = render_to_string('email.html', template_data)
-        unsubscribe_url = 'blah'  # TODO
         headers = {'List-Unsubscribe': '<{}>'.format(unsubscribe_url)}
-        email = EmailMultiAlternatives(subject='An election is coming up!', from_email=settings.DEFAULT_FROM_EMAIL,
-                                     to=[self.voter.user.email], body=text_body, headers=headers)
+        email = EmailMultiAlternatives(
+            subject='An election is coming up!', from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[self.voter.user.email], body=text_body, headers=headers)
         email.attach_alternative(html_body, 'text/html')
         email.send()
