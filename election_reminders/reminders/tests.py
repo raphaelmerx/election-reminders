@@ -7,10 +7,10 @@ from django.test import TestCase, override_settings
 from django.core import mail
 from djrill.mail.backends.djrill import DjrillBackend
 
-from elections.tests.factories import ElectionFactory
+from elections.factories import ElectionFactory
 from voters.models import Voter
-from voters.tests.factories import VoterFactory
-from reminders.tests.factories import ScheduleFactory
+from voters.factories import VoterFactory
+from reminders.factories import ScheduleFactory
 from reminders.models import Message, Schedule
 from reminders.tasks import create_messages, send_message
 from .factories import MessageFactory

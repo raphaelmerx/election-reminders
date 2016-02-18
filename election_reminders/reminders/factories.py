@@ -4,8 +4,8 @@ import factory
 from factory.django import DjangoModelFactory
 
 from reminders.models import Message, Schedule
-from voters.tests.factories import VoterFactory
-from elections.tests.factories import ElectionFactory
+from voters.factories import VoterFactory
+from elections.factories import ElectionFactory
 
 
 class ScheduleFactory(DjangoModelFactory):

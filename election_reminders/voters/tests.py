@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django.test import Client
 
-from reminders.tests.factories import MessageFactory
+from reminders.factories import MessageFactory
 
 
 class Unsubscribe(TestCase):
